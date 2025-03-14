@@ -75,7 +75,7 @@ public class Main {
     public static String findMaxCount(ArrayList<Value> values) {
         HashMap<String, Integer> counts = new HashMap<>();
         for (Value value: values) {
-            counts.put(value.label, counts.getOrDefault(value, 0) + 1);
+            counts.put(value.label, counts.getOrDefault(value.label, 0) + 1);
         }
 
         int maxCount = 0;
