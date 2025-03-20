@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.List;
 
 // Is_versicolor
@@ -7,10 +8,14 @@ public class Perceptron {
     int dimension;
     double alpha = 0.01;
 
-    public Perceptron(double[] weights, double bias, int dimension) {
-        this.weights = weights;
-        this.bias = bias;
+    public Perceptron(int dimension, double alpha) {
         this.dimension = dimension;
+        this.alpha = alpha;
+        this.weights = new double[dimension];
+        for(int i = 0; i < dimension; i++) {
+            weights[i] = Math.random();
+        }
+        this.bias = Math.random();
     }
 
     double net(double[] x){
@@ -19,7 +24,7 @@ public class Perceptron {
         return result;
     }
 
-    int predict(double[] x){
+    public int predict(double[] x){
         double net = net(x);
 
         if(net>=0){
@@ -30,19 +35,16 @@ public class Perceptron {
     }
 
     public void train(List<Value> values){
-        values.stream().forEach(value -> {
+        values.forEach(value -> {
             int decision = predict(value.vector);
-            apply_delta_rule(decision, value.label, value.vector);
+            apply_delta_rule(value.label, decision, value.vector);
         }
         );
     }
 
     void apply_delta_rule(int d, int y, double[] x){
-        double[] newWeights = new double[dimension];
-        double newBias = 0;
-
-        newWeights = addVector(weights, scaleVector(x,alpha*(d-y)));
-        newBias = bias - alpha*(d-y);
+        weights = addVector(weights, scaleVector(x,alpha*(d-y)));
+        bias = bias - alpha*(d-y);
     }
 
     public boolean is_versicolor(Value x){
