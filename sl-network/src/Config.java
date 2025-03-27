@@ -1,18 +1,17 @@
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Config {
     public ArrayList<Value> train;
     public ArrayList<Value> test;
     public double alpha;
-    public List<String> languages;
+    public Set<String> languages;
 
-    public Config(ArrayList<Value> train, ArrayList<Value> test, double alpha, List<String> languages) {
+    public Config(ArrayList<Value> train, ArrayList<Value> test, double alpha, Set<String> languages) {
         this.train = train;
         this.test = test;
         this.alpha = alpha;
+        this.languages = languages;
     }
 
     public static Config fromArgs(String[] args) {
@@ -27,10 +26,13 @@ public class Config {
 
         ArrayList<Value> train = null;
         ArrayList<Value> test = null;
+        Set<String> languages = null;
         int dimension = 0;
 
         try {
-            train = CSVParser.parse(cliParser.getTrainSet());
+            CSVParser parser = new CSVParser();
+            train = parser.parse(cliParser.getTrainSet());
+            languages = parser.languages;
             if (train.isEmpty()) {
                 System.err.println("Train set is empty");
                 System.exit(1);
@@ -39,7 +41,7 @@ public class Config {
             if(cliParser.isInputVector()) {
 //                test = addTestsInteractively(train.getFirst().vector.length);
             } else {
-                test = CSVParser.parse(cliParser.getTestSet());
+                test = parser.parse(cliParser.getTestSet());
                 if(dimension!=test.getFirst().vector.length) {
                     throw new Exception("Dimensions of train and test set do not match");
                 }
@@ -49,7 +51,7 @@ public class Config {
             System.exit(1);
         }
 
-        return new Config(train, test, cliParser.getAlpha());
+        return new Config(train, test, cliParser.getAlpha(), languages);
     }
 
 /*

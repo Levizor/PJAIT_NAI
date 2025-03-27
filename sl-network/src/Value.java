@@ -17,8 +17,8 @@ public class Value {
     public static Value parseValue(String line) {
         try {
             int firstComa = line.indexOf(",");
-            String text = line.substring(0, firstComa);
-            String label = line.substring(firstComa + 1);
+            String label = line.substring(0, firstComa);
+            String text = line.substring(firstComa + 1).toLowerCase();
             double[] vectorVal = getLetterFrequencies(text);
 
             return new Value(vectorVal, label);
@@ -32,11 +32,14 @@ public class Value {
         int size = text.length();
 
         for (int i = 0; i < size; i++) {
-            letterFrequencies[text.charAt(i)-'a']++;
+            char c = text.charAt(i);
+            if(c >= 97 && c <= 122) {
+                letterFrequencies[text.charAt(i)-'a']++;
+            }
         }
 
         for (int i = 0; i < 26; i++) {
-            letterFrequencies[i] /= size;
+            letterFrequencies[i] /=  size;
         }
 
         return letterFrequencies;
