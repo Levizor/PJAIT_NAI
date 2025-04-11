@@ -1,10 +1,10 @@
 import java.util.Arrays;
 
 public class Value {
-    char label;
-    public char[] attributes;
+    public String label;
+    public String[] attributes;
 
-    public Value(char[] attributes, char label) {
+    public Value(String[] attributes, String label) {
         this.attributes = attributes;
         this.label = label;
     }
@@ -15,10 +15,11 @@ public class Value {
     }
 
     public static Value fromString(String s) {
-        char label = s.charAt(0);
-        char[] attributes = new char[s.length()-1];
-        for (int i = 1; i < s.length(); i++) {
-            attributes[i-1] = s.charAt(i);
+        String[] tokens = s.split(",");
+        String label = tokens[0];
+        String[] attributes = new String[tokens.length-1];
+        for (int i = 0; i < attributes.length; i++) {
+            attributes[i] = tokens[i+1];
         }
 
         return new Value(attributes, label);

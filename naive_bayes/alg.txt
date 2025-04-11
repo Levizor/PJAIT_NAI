@@ -1,0 +1,13 @@
+Calculate P(yes | attributes) for a given case of attributes
+Calculate P(no | attributes) for a given case of attributes
+return the highest probability
+
+overcast mild normal false
+
+P(yes) P.... = 9/14 * 4/9 * 4/9 * 6/9 * 6/9 = 0.0564373898
+P(no) P... = 5/14 * 1/8 * 2/5 * 1/5 * 2/5 = 0.0014285714
+
+overcast cool high false
+
+P(yes) | P... = 9/14 * 4/9 * 3/9 * 3/9 * 6/9 = 0.0211640212
+P(no) | P... = 5/14 * 1/8 * 1/8 * 4/5 * 2/5 = 0.0017857143
