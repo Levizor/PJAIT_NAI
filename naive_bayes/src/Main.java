@@ -6,5 +6,9 @@ public class Main {
 
         BayesClassifier classifier = new BayesClassifier(config.train);
 
+        var evaluation = classifier.classify(config.test);
+
+        System.out.println(evaluation);
+
     }
 }

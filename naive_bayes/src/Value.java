@@ -9,6 +9,14 @@ public class Value {
         this.label = label;
     }
 
+    public boolean is_edible() {
+        return label.equals("e");
+    }
+
+    public boolean is_poisonous(){
+        return label.equals("p");
+    }
+
     @Override
     public String toString() {
         return label + ": " + Arrays.toString(attributes);
