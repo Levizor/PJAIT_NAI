@@ -11,5 +11,11 @@ public class Main {
         System.out.println(config.k);
         System.out.println(config.train);
 
+        KMean kMean = new KMean(config.train, config.k);
+
+
+        do {
+            System.out.println(kMean.totalSum());
+        } while (kMean.performIteration());
     }
 }
