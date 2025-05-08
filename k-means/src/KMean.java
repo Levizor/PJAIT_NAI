@@ -1,12 +1,9 @@
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class KMean {
     List<Value> values;
-    List<Set<Value>> sets;
-    List<Value> centroids;
+    List<Cluster> sets;
     int dimension;
 
     int k;
@@ -16,18 +13,19 @@ public class KMean {
         this.dimension = values.getFirst().vector.length;
         this.values = values;
         this.k = k;
-        sets = new ArrayList<Set<Value>>(k);
-        for (var set : sets) {
-            set = new HashSet<>();
+        sets = new ArrayList<Cluster>(k);
+        for (int i = 0; i < k; i++) {
+            sets.add(new Cluster(dimension));
         }
-        centroids = new ArrayList<>(k);
         init_centroids();
     }
 
     private void init_centroids() {
+        List<Integer> random_indecies = new Random().ints(0, values.size()).distinct().limit(k).boxed().collect(Collectors.toList());
         for (int i = 0; i < k; i++) {
-            var val = values.get((int) (Math.random() * values.size()));
-            centroids.set(i, new Value(val.vector));
+            var val = values.get(random_indecies.get(i));
+//            System.out.println("Centroid: " + val);
+            sets.get(i).setCentroid(val.copy());
         }
     }
 
@@ -37,13 +35,13 @@ public class KMean {
         }
         for (var value: values) {
             int index = 0;
-            double sum = value.diffSquared(centroids.get(index));
+            double minDistance = value.diffSquared(sets.get(index).getCentroid());
 
             for (int i = 1; i < k; i++) {
-                double temp = value.diffSquared(centroids.get(i));
-                if (temp < sum){
+                double temp = value.diffSquared(sets.get(i).getCentroid());
+                if (temp < minDistance){
                     index = i;
-                    sum = temp;
+                    minDistance = temp;
                 }
             }
 
@@ -52,11 +50,11 @@ public class KMean {
     }
 
     public boolean performIteration(){
-        var tempCentroids = new ArrayList<>(centroids);
+        var tempCentroids = sets.stream().map(Cluster::getCentroid).toList();
         calculateSets();
-        calculateCentroids();
+        sets.forEach(Cluster::calculateCentroid);
         for (int i = 0; i < k; i++) {
-            if(!tempCentroids.get(i).equals(centroids.get(i))){
+            if(!tempCentroids.get(i).equals(sets.get(i).getCentroid())){
                 return true;
             }
         }
@@ -64,35 +62,18 @@ public class KMean {
     }
 
     public double totalSum(){
-        double sum = 0;
+        return sets.stream().map(Cluster::sumOfDistances).mapToDouble(Double::doubleValue).sum();
+    }
+
+    public void printInfo(boolean print_members){
         for (int i = 0; i < k; i++) {
-            for(var value: sets.get(i)){
-                sum+=value.diffSquared(centroids.get(i));
+            System.out.printf("Set #%d\n", i+1);
+            sets.get(i).printHomogeneity();
+            if(print_members){
+                for (var value : sets.get(i)) {
+                    System.out.println("\t" + value);
+                }
             }
         }
-
-        return sum;
     }
-
-    public void calculateCentroids(){
-        for (int i = 0; i < k; i++) {
-            centroids.set(i, getCentroid(sets.get(i)));
-        }
-    }
-
-    public Value getCentroid(Set<Value> set){
-        double[] sums = new double[dimension];
-        for (var value : set) {
-            for (int i = 0; i < dimension; i++){
-                sums[i]+=value.vector[i];
-            }
-        }
-
-        for (int i = 0; i < dimension; i++){
-            sums[i]/=set.size();
-        }
-
-        return new Value(sums);
-    }
-
 }

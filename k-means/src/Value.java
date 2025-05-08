@@ -40,4 +40,32 @@ public class Value {
         return sumOfDistanceDiffSquared(this, v2);
     }
 
+    Value copy(){
+        return new Value(vector.clone());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (!(obj instanceof Value)) {
+            return false;
+        }
+
+        Value other = (Value) obj;
+
+        return Arrays.equals(vector, other.vector);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(vector);
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
 }

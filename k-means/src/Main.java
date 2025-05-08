@@ -1,21 +1,16 @@
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 public class Main {
     public static void main(String[] args) {
         Config config = Config.fromArgs(args);
 
-        System.out.println(config.k);
-        System.out.println(config.train);
-
         KMean kMean = new KMean(config.train, config.k);
+        int iteration = 1;
 
+        while (kMean.performIteration()){
+            System.out.printf("Iteration %d: %.2f\n", iteration, kMean.totalSum());
+            iteration++;
+        }
+        System.out.println("\n\nInfo:\n\n");
 
-        do {
-            System.out.println(kMean.totalSum());
-        } while (kMean.performIteration());
+        kMean.printInfo(false);
     }
 }
