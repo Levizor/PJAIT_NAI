@@ -8,10 +8,10 @@ import java.util.Set;
 public class BayesClassifier {
     private List<Value> values;
     private int numTotal = 0;
-    private HashMap<Pair<Integer, String>, Integer> edibleCounts = new HashMap<>();
-    private int numEdible = 0;
-    private HashMap<Pair<Integer, String>, Integer> poisonousCounts = new HashMap<>();
-    private int numPoisonus = 0;
+    private HashMap<Pair<Integer, String>, Integer> positiveCounts = new HashMap<>();
+    private int numPositive = 0;
+    private HashMap<Pair<Integer, String>, Integer> negativeCounts = new HashMap<>();
+    private int numNegative = 0;
     private HashMap<Integer, Integer> numberOfFeatures = new HashMap<>();
 
     public BayesClassifier(List<Value> values) {
@@ -24,10 +24,10 @@ public class BayesClassifier {
         for (Value value : values) {
             var counts = switch (value.label){
                 case "e" -> {
-                    numEdible++; yield edibleCounts;
+                    numPositive++; yield positiveCounts;
                 }
                 case "p" -> {
-                    numPoisonus++; yield poisonousCounts;
+                    numNegative++; yield negativeCounts;
                 }
                 default -> null;
             };
@@ -39,8 +39,8 @@ public class BayesClassifier {
             }
         }
 
-        var keys =  new HashSet<>(edibleCounts.keySet());
-        keys.addAll(poisonousCounts.keySet());
+        var keys =  new HashSet<>(positiveCounts.keySet());
+        keys.addAll(negativeCounts.keySet());
         var mapSet = new HashMap<Integer, Set<String>>();
 
         keys.stream().forEach(pair -> {
@@ -55,16 +55,16 @@ public class BayesClassifier {
     }
 
     private double trueProbability(){
-        return (double) numEdible / numTotal;
+        return (double) numPositive / numTotal;
     }
 
     private double falseProbability(){
-        return (double) numPoisonus / numTotal;
+        return (double) numNegative / numTotal;
     }
 
-    private double probability(boolean is_edible, Pair<Integer, String> attribute){
-        var counts = is_edible ? edibleCounts : poisonousCounts;
-        var num = is_edible ? numEdible : numPoisonus;
+    private double probability(boolean is_positive, Pair<Integer, String> attribute){
+        var counts = is_positive ? positiveCounts : negativeCounts;
+        var num = is_positive ? numPositive : numNegative;
 
         double pairCount = counts.getOrDefault(attribute, 0);
 
@@ -76,21 +76,21 @@ public class BayesClassifier {
         return pairCount / num;
     }
 
-    private double probability(boolean is_edible, String[] attributes){
-        double probability = is_edible ? trueProbability() : falseProbability();
+    private double probability(boolean is_positive, String[] attributes){
+        double probability = is_positive ? trueProbability() : falseProbability();
         for (int i = 0; i < attributes.length; i++) {
             var pair = new Pair<>(i, attributes[i]);
-            probability *= probability(is_edible, pair);
+            probability *= probability(is_positive, pair);
         }
 
         return probability;
     }
 
-    public boolean is_edible(Value value) {
-        var edible = probability(true, value.attributes);
-        var poisonous = probability(false, value.attributes);
+    public boolean is_positive(Value value) {
+        var positiveProbability = probability(true, value.attributes);
+        var negativeProbability = probability(false, value.attributes);
 
-        return edible >= poisonous;
+        return positiveProbability >= negativeProbability;
     }
 
 
@@ -98,12 +98,12 @@ public class BayesClassifier {
         Evaluation eval = new Evaluation();
 
         for (Value value : values) {
-            boolean is_edible = is_edible(value);
-            if(is_edible){
-               if (value.is_edible()) eval.TP++;
+            boolean is_positive = is_positive(value);
+            if(is_positive){
+               if (value.is_positive()) eval.TP++;
                else eval.FP++;
             } else {
-                if (value.is_poisonous()) eval.TN++;
+                if (value.is_negative()) eval.TN++;
                 else eval.FN++;
             }
         }

@@ -30,9 +30,9 @@ public class Evaluation {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("TP: ").append(TP).append("\n");
+        sb.append("TN: ").append(TN).append("\n");
         sb.append("FP: ").append(FP).append("\n");
         sb.append("FN: ").append(FN).append("\n");
-        sb.append("TN: ").append(TN).append("\n");
         sb.append("Accuracy: ").append(String.format("%.2f%%", accuracy() * 100)).append("\n");
         sb.append("Precision: ").append(String.format("%.2f%%", precision() * 100)).append("\n");
         sb.append("Recall: ").append(String.format("%.2f%%", recall() * 100)).append("\n");

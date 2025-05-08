@@ -9,6 +9,5 @@ public class Main {
         var evaluation = classifier.classify(config.test);
 
         System.out.println(evaluation);
-
     }
 }

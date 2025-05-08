@@ -9,11 +9,11 @@ public class Value {
         this.label = label;
     }
 
-    public boolean is_edible() {
+    public boolean is_positive() {
         return label.equals("e");
     }
 
-    public boolean is_poisonous(){
+    public boolean is_negative(){
         return label.equals("p");
     }
 
